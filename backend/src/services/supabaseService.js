@@ -1,5 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const supabase = createClient(process.sb_publishable_c8Jve4UxW3YtzB3l8sYPiQ_yqo4xkSS,sb_secret_onqdVnTQZcGfMLNsSqSGVg_IgTqWBal);
 
 const saveComment = async (data) => {
     const { data: comment, error } = await supabase
