@@ -4,37 +4,37 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { initSockets } = require('./sockets/tiktokSocket');
 
-// Inisialisasi Express
 const app = express();
 const server = http.createServer(app);
 
-// Konfigurasi Socket.IO dengan CORS yang aman
-const io = new Server(server, { 
-    cors: { 
-        origin: process.env.FRONTEND_URL || "http://localhost:3000",
-        methods: ["GET", "POST"] 
-    } 
+// Socket.IO
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
 });
 
-// Middleware
 app.use(express.json());
 
-/**
- * Health Check Endpoint
- * Digunakan oleh penyedia layanan cloud (seperti Railway) untuk memantau status aplikasi
- */
+// Homepage
+app.get('/', (req, res) => {
+    res.send('GhostLive AI Backend Online');
+});
+
+// Health Check
 app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'ok', 
-        timestamp: new Date().toISOString() 
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString()
     });
 });
 
-// Inisialisasi Socket.IO untuk TikTok
+// TikTok Socket
 initSockets(io);
 
-// Menjalankan Server
 const PORT = process.env.PORT || 3001;
+
 server.listen(PORT, () => {
-    console.log(`Server GhostLive AI berjalan pada port ${PORT}`);
+    console.log(`GhostLive AI Backend running on port ${PORT}`);
 });
