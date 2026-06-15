@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Backend service for GhostLive AI",
   "main": "backend/src/index.js",
-"scripts": {
-  "dev": "nodemon backend/src/index.js",
-  "start": "node backend/src/index.js"
-}
+  "scripts": {
+    "dev": "nodemon backend/src/index.js",
+    "start": "node backend/src/index.js"
   },
   "engines": {
     "node": ">=20.0.0"
