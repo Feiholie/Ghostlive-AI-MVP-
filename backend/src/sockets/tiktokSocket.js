@@ -1,4 +1,4 @@
-const { TikTokLiveConnection } = require('tiktok-live-connector');
+const { WebcastPushConnection } = require('tiktok-live-connector');
 
 const { generateReply } = require('../services/geminiService');
 const { textToSpeech } = require('../services/elevenLabsService');
@@ -24,12 +24,11 @@ const initSockets = (io) => {
 
             try {
 
-                tiktokConn = new TikTokLiveConnection(username);
+               tiktokConn = new WebcastPushConnection(username);
 
-                console.log('🔄 Connecting to TikTok...');
+console.log('🔄 Connecting to TikTok...');
 
-                const state = await tiktokConn.connect();
-
+const state = await tiktokConn.connect();
                 console.log('✅ TikTok Connected:', state);
 
                 socket.emit('status', 'connected');
