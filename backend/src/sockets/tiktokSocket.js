@@ -1,7 +1,8 @@
 const TikTokLive = require('tiktok-live-connector');
 
-console.log('TikTok Package:', TikTokLive);
-
+console.log('AVAILABLE KEYS');
+console.log(Object.keys(TikTokLive));
+console.log('END KEYS');
 const { generateReply } = require('../services/geminiService');
 const { textToSpeech } = require('../services/elevenLabsService');
 const { saveComment, saveResponse } = require('../services/supabaseService');
