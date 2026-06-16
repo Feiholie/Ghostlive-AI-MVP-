@@ -1,4 +1,7 @@
-const { WebcastPushConnection } = require('tiktok-live-connector');
+const TikTokLive = require('tiktok-live-connector');
+
+console.log('TikTok Package:', TikTokLive);
+
 const { generateReply } = require('../services/geminiService');
 const { textToSpeech } = require('../services/elevenLabsService');
 const { saveComment, saveResponse } = require('../services/supabaseService');
@@ -22,6 +25,10 @@ const initSockets = (io) => {
             socket.emit('status', 'connecting');
 
             try {
+
+                const WebcastPushConnection =
+                    TikTokLive.WebcastPushConnection || TikTokLive;
+
                 tiktokConn = new WebcastPushConnection(username);
 
                 console.log('🔄 Connecting to TikTok...');
@@ -34,9 +41,8 @@ const initSockets = (io) => {
 
                 tiktokConn.on('chat', async (data) => {
                     try {
-                        console.log(
-                            `💬 ${data.nickname}: ${data.comment}`
-                        );
+
+                        console.log(`💬 ${data.nickname}: ${data.comment}`);
 
                         const comment = await saveComment(data);
 
@@ -56,6 +62,7 @@ const initSockets = (io) => {
                         });
 
                     } catch (err) {
+
                         console.error('❌ Chat Processing Error:', err);
 
                         socket.emit(
@@ -66,6 +73,7 @@ const initSockets = (io) => {
                 });
 
                 tiktokConn.on('disconnected', () => {
+
                     console.log('⚠️ TikTok Disconnected');
 
                     socket.emit('status', 'disconnected');
