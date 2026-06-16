@@ -3,58 +3,89 @@ const { generateReply } = require('../services/geminiService');
 const { textToSpeech } = require('../services/elevenLabsService');
 const { saveComment, saveResponse } = require('../services/supabaseService');
 
-/**
- * Inisialisasi socket.io untuk menangani koneksi TikTok Live
- */
 const initSockets = (io) => {
     io.on('connection', (socket) => {
+
+        console.log('✅ Frontend Connected');
+
         let tiktokConn = null;
 
         socket.on('connect_tiktok', async (username) => {
-            if (!username) return socket.emit('error', 'Username diperlukan');
-            
-            tiktokConn = new WebcastPushConnection(username);
+
+            console.log('📱 CONNECT REQUEST:', username);
+
+            if (!username) {
+                console.log('❌ Username kosong');
+                return socket.emit('error', 'Username diperlukan');
+            }
+
             socket.emit('status', 'connecting');
-            
+
             try {
-                await tiktokConn.connect();
+                tiktokConn = new WebcastPushConnection(username);
+
+                console.log('🔄 Connecting to TikTok...');
+
+                const state = await tiktokConn.connect();
+
+                console.log('✅ TikTok Connected:', state);
+
                 socket.emit('status', 'connected');
 
                 tiktokConn.on('chat', async (data) => {
                     try {
-                        // 1. Simpan komentar asli ke Supabase
+                        console.log(
+                            `💬 ${data.nickname}: ${data.comment}`
+                        );
+
                         const comment = await saveComment(data);
+
                         socket.emit('new_chat', data);
 
-                        // 2. Generate jawaban menggunakan Gemini
                         const reply = await generateReply(data.comment);
-                        
-                        // 3. Generate audio menggunakan ElevenLabs
+
+                        console.log('🤖 AI Reply:', reply);
+
                         const audio = await textToSpeech(reply);
-                        
-                        // 4. Simpan respon AI ke Supabase
+
                         await saveResponse(comment.id, reply);
-                        
-                        // 5. Kirim respon dan audio ke frontend
-                        socket.emit('ai_response', { 
-                            response: reply, 
-                            audio: audio 
+
+                        socket.emit('ai_response', {
+                            response: reply,
+                            audio: audio
                         });
+
                     } catch (err) {
-                        console.error("Gagal memproses chat:", err);
-                        socket.emit('error', 'Gagal memproses pesan');
+                        console.error('❌ Chat Processing Error:', err);
+
+                        socket.emit(
+                            'error',
+                            'Gagal memproses pesan'
+                        );
                     }
                 });
 
                 tiktokConn.on('disconnected', () => {
+                    console.log('⚠️ TikTok Disconnected');
+
                     socket.emit('status', 'disconnected');
                 });
 
             } catch (err) {
-                console.error("Gagal koneksi ke TikTok:", err);
+
+                console.error('❌ TikTok Connection Error:', err);
+
                 socket.emit('status', 'disconnected');
-                socket.emit('error', 'Gagal terhubung ke TikTok Live');
+
+                socket.emit(
+                    'error',
+                    err.message || 'Gagal terhubung ke TikTok Live'
+                );
             }
+        });
+
+        socket.on('disconnect', () => {
+            console.log('🔌 Frontend Disconnected');
         });
     });
 };
