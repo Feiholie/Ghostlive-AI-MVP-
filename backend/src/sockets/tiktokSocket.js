@@ -3,6 +3,15 @@ const TikTokLive = require('tiktok-live-connector');
 console.log('AVAILABLE KEYS');
 console.log(Object.keys(TikTokLive));
 console.log('END KEYS');
+console.log(
+  'TikTok Keys Filter:',
+  Object.keys(TikTokLive).filter(
+    k =>
+      k.toLowerCase().includes('live') ||
+      k.toLowerCase().includes('connection') ||
+      k.toLowerCase().includes('webcast')
+  )
+);
 const { generateReply } = require('../services/geminiService');
 const { textToSpeech } = require('../services/elevenLabsService');
 const { saveComment, saveResponse } = require('../services/supabaseService');
