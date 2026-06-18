@@ -7,13 +7,13 @@ const { saveComment, saveResponse } = require('../services/supabaseService');
 const initSockets = (io) => {
     io.on('connection', (socket) => {
 
-        console.log('✅ Frontend Connected');
+        console.log('✅ Frontend Connected:', socket.id);
 
-         socket.onAny((event, ...args) => {
+        socket.onAny((event, ...args) => {
             console.log('📡 EVENT:', event);
-            console.log(args);
+            console.log(JSON.stringify(args, null, 2));
         });
-        
+
         let tiktokConn = null;
 
     socket.on('connect_tiktok', async (payload) => {
