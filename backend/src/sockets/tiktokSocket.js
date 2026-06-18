@@ -16,7 +16,7 @@ const initSockets = (io) => {
         });
 
         let tiktokConn = null;
-
+let autoHostInterval = null;
     socket.on('connect_tiktok', async (payload) => {
 
     console.log('================================');
@@ -41,8 +41,13 @@ const initSockets = (io) => {
 
     try {
 
+        if (tiktokConn) {
+    try {
+        tiktokConn.disconnect();
+    } catch (e) {}
+}
         tiktokConn = new WebcastPushConnection(username);
-
+        
 console.log('🔄 Connecting to TikTok...');
 
 const state = await tiktokConn.connect();
@@ -50,6 +55,47 @@ const state = await tiktokConn.connect();
 
                 socket.emit('status', 'connected');
 
+        console.log('🎙️ Auto Host Started');
+
+if (autoHostInterval) {
+    clearInterval(autoHostInterval);
+}
+
+autoHostInterval = setInterval(async () => {
+
+    try {
+
+        const prompt = `
+        Kamu adalah host TikTok Live yang ramah.
+
+        Nama Produk: ${product.name}
+        Harga: ${product.price}
+        Deskripsi: ${product.description}
+        Keunggulan: ${product.benefits}
+        Promo: ${product.promo}
+        CTA: ${product.cta}
+
+        Buat promosi singkat maksimal 2 kalimat.
+        Jangan selalu mengulang kalimat yang sama.
+        `;
+
+        const reply = await generateReply(prompt);
+
+        console.log('🎤 AUTO HOST:', reply);
+
+        const audio = await textToSpeech(reply);
+
+        socket.emit('ai_response', {
+            response: reply,
+            audio
+        });
+
+                                console.log('✅ AUTO HOST AUDIO SENT');
+    } catch (err) {
+        console.error('❌ Auto Host Error:', err);
+    }
+
+}, 30000);
                 tiktokConn.on('chat', async (data) => {
 
                     try {
@@ -73,6 +119,7 @@ const state = await tiktokConn.connect();
                             audio
                         });
 
+
                     } catch (err) {
 
                         console.error('❌ Chat Processing Error:', err);
@@ -87,7 +134,10 @@ const state = await tiktokConn.connect();
                 tiktokConn.on('disconnected', () => {
 
                     console.log('⚠️ TikTok Disconnected');
-
+if (autoHostInterval) {
+        clearInterval(autoHostInterval);
+        autoHostInterval = null;
+       }
                     socket.emit('status', 'disconnected');
                 });
 
@@ -106,16 +156,21 @@ const state = await tiktokConn.connect();
 
         socket.on('disconnect', () => {
 
-            console.log('🔌 Frontend Disconnected');
+    console.log('🔌 Frontend Disconnected');
 
-            if (tiktokConn) {
-                try {
-                    tiktokConn.disconnect();
-                } catch (e) {
-                    console.log('TikTok disconnect skipped');
-                }
-            }
-        });
+    if (autoHostInterval) {
+        clearInterval(autoHostInterval);
+        autoHostInterval = null;
+    }
+
+    if (tiktokConn) {
+        try {
+            tiktokConn.disconnect();
+        } catch (e) {
+            console.log('TikTok disconnect skipped');
+        }
+    }
+});
     });
 };
 
