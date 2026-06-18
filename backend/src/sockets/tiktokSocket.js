@@ -11,15 +11,20 @@ const initSockets = (io) => {
 
         let tiktokConn = null;
 
-     socket.on('connect_tiktok', async (payload) => {
+    socket.on('connect_tiktok', async (payload) => {
 
-    console.log('📱 CONNECT REQUEST:', payload);
+    console.log('================================');
+    console.log('📱 CONNECT TIKTOK EVENT MASUK');
+    console.log(payload);
+    console.log('================================');
 
     const username = payload.username;
     const product = payload.product;
 
     console.log('👤 Username:', username);
     console.log('📦 Product:', product);
+
+    console.log('📱 CONNECT REQUEST:', payload);
 
     if (!username) {
         console.log('❌ Username kosong');
