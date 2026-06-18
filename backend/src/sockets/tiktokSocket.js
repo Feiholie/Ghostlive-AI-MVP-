@@ -11,20 +11,26 @@ const initSockets = (io) => {
 
         let tiktokConn = null;
 
-        socket.on('connect_tiktok', async (username) => {
+     socket.on('connect_tiktok', async (payload) => {
 
-            console.log('📱 CONNECT REQUEST:', username);
+    console.log('📱 CONNECT REQUEST:', payload);
 
-            if (!username) {
-                console.log('❌ Username kosong');
-                return socket.emit('error', 'Username diperlukan');
-            }
+    const username = payload.username;
+    const product = payload.product;
 
-            socket.emit('status', 'connecting');
+    console.log('👤 Username:', username);
+    console.log('📦 Product:', product);
 
-            try {
+    if (!username) {
+        console.log('❌ Username kosong');
+        return socket.emit('error', 'Username diperlukan');
+    }
 
-               tiktokConn = new WebcastPushConnection(username);
+    socket.emit('status', 'connecting');
+
+    try {
+
+        tiktokConn = new WebcastPushConnection(username);
 
 console.log('🔄 Connecting to TikTok...');
 
