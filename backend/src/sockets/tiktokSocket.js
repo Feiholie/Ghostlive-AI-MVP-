@@ -1,3 +1,4 @@
+console.log("🚨 TIKTOK SOCKET FILE LOADED 🚨");
 const { WebcastPushConnection } = require('tiktok-live-connector');
 
 const { generateReply } = require('../services/geminiService');
