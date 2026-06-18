@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log("🔥 BUILD BARU TERPASANG");
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
