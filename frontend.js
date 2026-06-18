@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { Card } from "@/components/ui/card";
 
-const socket = io("https://ghostlive-ai-mvp-production.up.railway.app");
+const socket = io("http://localhost:8080");
 
 export default function Dashboard() {
     const [status, setStatus] = useState("Disconnected");
