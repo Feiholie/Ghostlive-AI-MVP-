@@ -9,6 +9,11 @@ const initSockets = (io) => {
 
         console.log('✅ Frontend Connected');
 
+         socket.onAny((event, ...args) => {
+            console.log('📡 EVENT:', event);
+            console.log(args);
+        });
+        
         let tiktokConn = null;
 
     socket.on('connect_tiktok', async (payload) => {
